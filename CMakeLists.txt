@@ -1,25 +1,25 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(odva_ethernetip)
+cmake_minimum_required(VERSION 3.5)
+# Plain cmake build was inspired by abb_libegm:
+# https://github.com/ros-industrial/abb_libegm/blob/master/CMakeLists.txt
 
-find_package(catkin REQUIRED)
+# Read version from the package.xml file.
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/package.xml package_xml_str)
+if(NOT package_xml_str MATCHES "<version>([0-9]+.[0-9]+.[0-9]+)</version>")
+  message(FATAL_ERROR "Could not parse project version from package.xml. Aborting.")
+endif()
 
+# At this point we either have a proper version string, or we've errored
+# out with a FATAL_ERROR above. So assume CMAKE_MATCH_1 contains our
+# package's version.
+project(odva_ethernetip VERSION ${CMAKE_MATCH_1} LANGUAGES CXX)
+
+
+# find dependencies
+find_package(Boost REQUIRED)
 find_package(console_bridge REQUIRED)
-find_package(Boost 1.47 REQUIRED COMPONENTS system)
-
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
-  DEPENDS Boost console_bridge
-)
-
-include_directories(
-  include
-  ${Boost_INCLUDE_DIRS}
-  ${console_bridge_INCLUDE_DIRS}
-)
 
 ## Declare a cpp library for just Ethernet/IP generic stuff
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/connection.cpp
   src/copy_serializable.cpp
   src/cpf_item.cpp
@@ -33,49 +33,52 @@ add_library(${PROJECT_NAME}
   src/rr_data.cpp
   src/session.cpp
 )
-target_link_libraries(${PROJECT_NAME}
-  ${Boost_LIBRARIES}
-  ${console_bridge_LIBRARIES}
+target_include_directories(odva_ethernetip PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  PUBLIC ${Boost_INCLUDE_DIRS}
+  PUBLIC ${console_bridge_INCLUDE_DIRS}
+)
+target_link_libraries(odva_ethernetip
+ ${Boost_LIBRARIES}
+ ${console_bridge_LIBRARIES}
 )
 
-## Mark executables and libraries for installation
-install(TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+install(
+  TARGETS odva_ethernetip
+  EXPORT export_odva_ethernetip
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
+# export targets
+set(export_targets ${export_targets};odva_ethernetip)
+export(EXPORT export_odva_ethernetip
+  FILE "${PROJECT_BINARY_DIR}/export_odva_ethernetip.cmake")
+
+# Create the ${PROJECT_NAME}Config.cmake.in
+set(CONF_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
+configure_file(cmake/${PROJECT_NAME}Config.cmake.in
+  "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}Config.cmake" @ONLY)
+
+include(CMakePackageConfigHelpers)
+
+# Create the ${PROJECT_NAME}ConfigVersion.cmake.
+write_basic_package_version_file(
+  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+  COMPATIBILITY AnyNewerVersion
 )
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
-if (CATKIN_ENABLE_TESTING)
-  catkin_add_gtest(${PROJECT_NAME}-test
-    test/serialization/buffer_writer_test.cpp
-    test/serialization/buffer_reader_test.cpp
-    test/serialization/stream_writer_test.cpp
-    test/serialization/stream_reader_test.cpp
-    test/serialization/serializable_buffer_test.cpp
-    test/serialization/serializable_primitive_test.cpp
-    test/test_socket_test.cpp
-    test/encap_header_test.cpp
-    test/encap_packet_test.cpp
-    test/cpf_item_test.cpp
-    test/cpf_packet_test.cpp
-    test/sequenced_address_item_test.cpp
-    test/identity_item_data_test.cpp
-    test/path_test.cpp
-    test/rr_data_test.cpp
-    test/message_router_request_test.cpp
-    test/message_router_response_test.cpp
-    test/rr_data_request_test.cpp
-    test/rr_data_response_test.cpp
-    test/forward_open_request_test.cpp
-    test/forward_open_success_test.cpp
-    test/forward_close_request_test.cpp
-    test/forward_close_success_test.cpp
-    test/session_test.cpp
-    test/test_main.cpp
-  )
-  target_link_libraries(${PROJECT_NAME}-test ${Boost_LIBRARIES} ${PROJECT_NAME})
-endif()
-
+install(FILES
+  "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}Config.cmake"
+  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  DESTINATION "share/${PROJECT_NAME}/cmake" COMPONENT dev)
+install(EXPORT export_odva_ethernetip
+  DESTINATION "share/${PROJECT_NAME}/cmake"
+  FILE export_odva_ethernetip.cmake
+  COMPONENT dev)
