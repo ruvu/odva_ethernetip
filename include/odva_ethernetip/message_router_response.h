@@ -58,6 +58,11 @@ public:
   MessageRouterResponse() : service(0), general_status(0) { }
 
   /**
+   * Construct an RR data holder
+   */
+  MessageRouterResponse(EIP_USINT service, EIP_USINT general_status) : service(service), general_status(general_status) { }
+
+  /**
    * Get the additional status data object in this message
    * @return Serializable additional status to be used for this response
    */
@@ -87,10 +92,7 @@ public:
    * @return the writer again
    * @throw std::length_error if the buffer is too small for the header data
    */
-  virtual Writer& serialize(Writer& writer) const
-  {
-    throw std::logic_error("Not implemented");
-  }
+  virtual Writer& serialize(Writer& writer) const;
 
   /**
    * Deserialize response data from the given reader and length

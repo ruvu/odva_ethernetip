@@ -49,6 +49,20 @@ size_t MessageRouterResponse::getLength() const
   return result;
 }
 
+eip::serialization::Writer &MessageRouterResponse::serialize(eip::serialization::Writer &writer) const
+{
+  writer.write(service);
+  writer.write(EIP_USINT(0)); // reserved
+  writer.write(general_status);
+
+  writer.write(EIP_USINT(0)); // length
+  if (additional_status_)
+    throw std::logic_error("Not implemented");
+  if (response_data_)
+    throw std::logic_error("Not implemented");
+  return writer;
+}
+
 Reader& MessageRouterResponse::deserialize(Reader& reader, size_t length)
 {
   reader.read(service);

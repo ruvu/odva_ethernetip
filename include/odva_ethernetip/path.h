@@ -161,10 +161,7 @@ public:
   /**
    * Not actually implemented
    */
-  virtual Reader& deserialize(Reader& reader)
-  {
-    throw std::logic_error("Not implemented");
-  }
+  virtual Reader& deserialize(Reader& reader);
 
 private:
   bool pad_after_length_;

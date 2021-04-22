@@ -41,7 +41,7 @@ using serialization::SerializableBuffer;
 using serialization::BufferReader;
 using serialization::BufferWriter;
 
-void EncapPacket::getPayloadAs(Serializable& result)
+void EncapPacket::getPayloadAs(Serializable& result) const
 {
   serialization::copy_serializable(result, *payload_);
 }

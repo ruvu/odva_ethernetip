@@ -32,6 +32,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include "odva_ethernetip/eip_types.h"
 #include "odva_ethernetip/serialization/serializable.h"
 #include "odva_ethernetip/serialization/reader.h"
+#include "odva_ethernetip/serialization/serializable_buffer.h"
 #include "odva_ethernetip/serialization/writer.h"
 #include "odva_ethernetip/path.h"
 
@@ -40,8 +41,10 @@ using boost::shared_ptr;
 namespace eip {
 
 using serialization::Serializable;
+using serialization::SerializableBuffer;
 using serialization::Reader;
 using serialization::Writer;
+
 
 /**
  * Class to encapsulate a MessageRouterRequest data.
@@ -119,7 +122,13 @@ public:
    */
   virtual Reader& deserialize(Reader& reader, size_t length)
   {
-    throw std::logic_error("Not implemented");
+    reader.read(service);
+    path_.deserialize(reader);
+    if (length > sizeof(service) + path_.getLength()) {
+      data_ = boost::make_shared<SerializableBuffer>();
+      data_->deserialize(reader);
+    }
+    return reader;
   }
 
   /**

@@ -143,7 +143,7 @@ protected:
    */
   virtual void setData(CPFItem& item)
   {
-    throw std::logic_error("Not implemented");
+    item.getDataAs(*mr_data_);
   }
 
 private:

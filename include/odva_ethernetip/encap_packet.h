@@ -103,7 +103,7 @@ public:
    * Get the payload as a particular serializable instance
    * @param result Serializable class to get data into
    */
-  void getPayloadAs(Serializable& result);
+  void getPayloadAs(Serializable& result) const;
 
   /**
    * Get the length of the entire packet, not just the payload

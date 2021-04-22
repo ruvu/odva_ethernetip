@@ -94,4 +94,13 @@ Writer& Path::serialize(Writer& writer, bool pad_after_length) const
   return writer;
 }
 
+Reader& Path::deserialize(Reader &reader)
+{
+  EIP_USINT length;
+  reader.read(length);
+  path_buf_.reserve(length * 2);
+  reader.readBuffer(boost::asio::buffer(path_buf_));
+  return reader;
+}
+
 } // namespace eip

@@ -56,6 +56,17 @@ using serialization::copy_serializable;
 class RRDataResponse : public RRData
 {
 public:
+  /**
+   * Construct an RR data response
+   */
+  RRDataResponse() = default;
+
+  /**
+   * Construct an RR data response
+   */
+  RRDataResponse(EIP_USINT service, EIP_USINT general_status) : response_data_(service, general_status)
+  {
+  }
 
   /**
    * Get the response code given in the Message Router section of the RR Data Response
@@ -121,7 +132,7 @@ protected:
    */
   virtual shared_ptr<Serializable> getData() const
   {
-    throw std::logic_error("Not implemented");
+    return boost::make_shared<MessageRouterResponse>(response_data_);
   }
 
   /**
