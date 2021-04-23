@@ -56,6 +56,14 @@ void Path::addSegment(EIP_USINT type, EIP_USINT data)
   path_buf_.push_back(data);
 }
 
+EIP_USINT Path::getSegment(EIP_USINT type)
+{
+  for (std::size_t i = 0; i < path_buf_.size(); i += 2)
+    if (path_buf_[i] == type)
+      return path_buf_[i + 1];
+  return 0;
+}
+
 void Path::addLogicalClass(EIP_USINT class_id)
 {
   addSegment(0x20, class_id);
@@ -74,6 +82,26 @@ void Path::addLogicalAttribute(EIP_USINT attribute_id)
 void Path::addLogicalConnectionPoint(EIP_USINT connection_id)
 {
   addSegment(0x2C, connection_id);
+}
+
+EIP_USINT Path::getLogicalClass()
+{
+  return getSegment(0x20);
+}
+
+EIP_USINT Path::getLogicalInstance()
+{
+  return getSegment(0x24);
+}
+
+EIP_USINT Path::getLogicalAttribute()
+{
+  return getSegment(0x30);
+}
+
+EIP_USINT Path::getLogicalConnectionPoint()
+{
+  return getSegment(0x2C);
 }
 
 size_t Path::getLength() const

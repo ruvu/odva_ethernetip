@@ -114,6 +114,11 @@ public:
    */
   void addLogicalConnectionPoint(EIP_USINT connection_id);
 
+  EIP_USINT getLogicalClass();
+  EIP_USINT getLogicalInstance();
+  EIP_USINT getLogicalAttribute();
+  EIP_USINT getLogicalConnectionPoint();
+
   /**
    * Clear out anything currently in the path
    */
@@ -173,6 +178,8 @@ private:
    * @param data Data to add to path
    */
   void addSegment(EIP_USINT type, EIP_USINT data);
+
+  EIP_USINT getSegment(EIP_USINT type);
 };
 
 } // namespace eip
