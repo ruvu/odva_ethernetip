@@ -33,6 +33,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
 #include "odva_ethernetip/eip_types.h"
 #include "odva_ethernetip/cpf_item.h"
+#include "odva_ethernetip/serialization/copy_serializable.h"
 #include "odva_ethernetip/serialization/serializable.h"
 #include "odva_ethernetip/serialization/reader.h"
 #include "odva_ethernetip/serialization/writer.h"
@@ -127,6 +128,16 @@ public:
   void setMRData(shared_ptr<Serializable> data)
   {
     mr_data_->setData(data);
+  }
+
+   /**
+   * Copy the request data into the given serializable type. Note that data
+   * must be available, make sure to check pointer exists first!
+   * @param result Structure into which to copy data
+   */
+  void getMRDataAs(Serializable& result)
+  {
+    copy_serializable(result, *mr_data_->getData());
   }
 
 protected:
