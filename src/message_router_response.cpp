@@ -59,7 +59,7 @@ eip::serialization::Writer &MessageRouterResponse::serialize(eip::serialization:
   if (additional_status_)
     throw std::logic_error("Not implemented");
   if (response_data_)
-    throw std::logic_error("Not implemented");
+    response_data_->serialize(writer);
   return writer;
 }
 

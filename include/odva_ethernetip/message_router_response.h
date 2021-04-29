@@ -63,6 +63,11 @@ public:
   MessageRouterResponse(EIP_USINT service, EIP_USINT general_status) : service(service), general_status(general_status) { }
 
   /**
+   * Construct an RR data holder with response data
+   */
+  MessageRouterResponse(EIP_USINT service, EIP_USINT general_status, shared_ptr<Serializable> response_data) : service(service), general_status(general_status), response_data_(response_data) { }
+
+  /**
    * Get the additional status data object in this message
    * @return Serializable additional status to be used for this response
    */

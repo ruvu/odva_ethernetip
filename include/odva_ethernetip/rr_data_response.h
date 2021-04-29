@@ -69,6 +69,13 @@ public:
   }
 
   /**
+   * Construct an RR data response with data
+   */
+  RRDataResponse(EIP_USINT service, EIP_USINT general_status, shared_ptr<Serializable> response_data) : response_data_(service, general_status, response_data)
+  {
+  }
+
+  /**
    * Get the response code given in the Message Router section of the RR Data Response
    * @return service code value
    */
@@ -126,6 +133,14 @@ public:
     copy_serializable(result, *response_data_.getResponseData());
   }
 
+  /**
+   * Used during deserialization to pass in the item data to be parsed
+   */
+  virtual void setData(CPFItem& item)
+  {
+    item.getDataAs(response_data_);
+  }
+
 protected:
   /**
    * Cannot current serialize this class
@@ -133,14 +148,6 @@ protected:
   virtual shared_ptr<Serializable> getData() const
   {
     return boost::make_shared<MessageRouterResponse>(response_data_);
-  }
-
-  /**
-   * Used during deserialization to pass in the item data to be parsed
-   */
-  virtual void setData(CPFItem& item)
-  {
-    item.getDataAs(response_data_);
   }
 
 private:
