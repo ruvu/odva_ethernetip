@@ -37,6 +37,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include "odva_ethernetip/path.h"
 
 using boost::shared_ptr;
+using boost::make_shared;
 
 namespace eip {
 
@@ -124,9 +125,11 @@ public:
   {
     reader.read(service);
     path_.deserialize(reader);
-    if (length > sizeof(service) + path_.getLength()) {
-      data_ = boost::make_shared<SerializableBuffer>();
-      data_->deserialize(reader);
+    size_t data_length = length - ( sizeof(service) + path_.getLength() );
+    if (data_length > 0) {
+      shared_ptr<SerializableBuffer> sb = make_shared<SerializableBuffer> ();
+      sb->deserialize(reader, data_length);
+      data_ = sb;
     }
     return reader;
   }
