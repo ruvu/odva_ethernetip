@@ -182,7 +182,7 @@ public:
    */
   virtual Reader& deserialize(Reader& reader, size_t length)
   {
-    throw std::logic_error("Not implemented");
+    return deserialize(reader);
   }
 
   /**
@@ -190,7 +190,24 @@ public:
    */
   virtual Reader& deserialize(Reader& reader)
   {
-    throw std::logic_error("Not implemented");
+    reader.read(timeout_tick_size);
+    reader.read(timeout_ticks);
+    reader.read(o_to_t_connection_id);
+    reader.read(t_to_o_connection_id);
+    reader.read(connection_sn);
+    reader.read(originator_vendor_id);
+    reader.read(originator_sn);
+    reader.read(timeout_multiplyer);
+    reader.skip(1);
+    reader.skip(1);
+    reader.skip(1);
+    reader.read(o_to_t_rpi);
+    reader.read(o_to_t_conn_params);
+    reader.read(t_to_o_rpi);
+    reader.read(t_to_o_conn_params);
+    reader.read(conn_type);
+    path_.deserialize(reader);
+    return reader;
   }
 
 private:
