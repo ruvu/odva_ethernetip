@@ -92,7 +92,21 @@ public:
    */
   virtual Writer& serialize(Writer& writer) const
   {
-    throw std::logic_error("Not implemented");
+    EIP_BYTE reserved = 0;
+    writer.write(connection_sn);
+    writer.write(originator_vendor_id);
+    writer.write(originator_sn);
+    if (response_data_)
+    {
+      writer.write(response_data_->getLength());
+      writer.write(reserved);
+      response_data_->serialize(writer);
+    } else
+    {
+      writer.write(reserved);
+      writer.write(reserved);
+    }
+    return writer;
   }
 
   /**

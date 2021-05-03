@@ -104,7 +104,7 @@ public:
    */
   virtual Reader& deserialize(Reader& reader, size_t length)
   {
-    throw std::logic_error("Not implemented");
+    return deserialize(reader);
   }
 
   /**
@@ -112,7 +112,13 @@ public:
    */
   virtual Reader& deserialize(Reader& reader)
   {
-    throw std::logic_error("Not implemented");
+    reader.read(timeout_tick_size);
+    reader.read(timeout_ticks);
+    reader.read(connection_sn);
+    reader.read(originator_vendor_id);
+    reader.read(originator_sn);
+    path_.deserialize(reader);
+    return reader;
   }
 
 private:
